@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Comanda;
+use App\Venda;
+use App\VendaItem;
+use App\Pedido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +42,6 @@ class ComandaController extends Controller
     {
         Comanda::create($request->all());
         return redirect()->route('comanda.index');
-        return view('comanda.edit', compact('comanda'));
     }
 
     /**
@@ -60,7 +62,7 @@ class ComandaController extends Controller
         // select * pedidos da comanda $id
         $total = $pedidos->sum('preco_total');
         // calcula valor total da comanda
-        return view('comanda.show', compact('comanda'),compact('pedidos'),compact('item'))->with('total',$total);
+        return view('comanda.show', compact('comanda', 'pedidos', 'total'));
     }
 
     /**
@@ -84,16 +86,63 @@ class ComandaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        DB::table('comanda')
-            ->where('id', $id)
-            ->update(
-                [
-                    'numero_mesa' => $request->titulo_prato,
-                    'nome_cliente' => $request->desc_prato,
-                    'status' => $request->preco
-                ]
-            );
-        return redirect()->route('comanda.index');
+        $comanda = Comanda::find($id);
+        
+        // Se estiver mudando para FECHADA, consolida a venda
+        if ($request->status === 'FECHADA' && $comanda->status !== 'FECHADA') {
+            DB::beginTransaction();
+            try {
+                // Cria a venda
+                $venda = Venda::create([
+                    'id_comanda' => $comanda->id,
+                    'numero_mesa' => $comanda->numero_mesa,
+                    'nome_cliente' => $comanda->nome_cliente,
+                    'valor_total' => DB::table('pedido')
+                        ->join('item', 'pedido.id_item', '=', 'item.id')
+                        ->where('pedido.id_comanda', $comanda->id)
+                        ->sum(DB::raw('item.preco * pedido.quantidade'))
+                ]);
+
+                // Move os itens para venda_itens
+                $pedidos = DB::table('pedido')
+                    ->join('item', 'pedido.id_item', '=', 'item.id')
+                    ->where('pedido.id_comanda', $comanda->id)
+                    ->select('pedido.*', 'item.preco')
+                    ->get();
+
+                foreach ($pedidos as $pedido) {
+                    VendaItem::create([
+                        'id_venda' => $venda->id,
+                        'id_item' => $pedido->id_item,
+                        'quantidade' => $pedido->quantidade,
+                        'preco_unitario' => $pedido->preco,
+                        'preco_total' => $pedido->preco * $pedido->quantidade
+                    ]);
+                }
+
+                // Remove os pedidos da comanda
+                Pedido::where('id_comanda', $comanda->id)->delete();
+
+                // Atualiza o status da comanda para AGUARDANDO
+                $comanda->status = 'AGUARDANDO';
+                $comanda->save();
+
+                DB::commit();
+                return redirect()->route('comanda.index')->with('success', 'Comanda fechada e venda consolidada com sucesso!');
+            } catch (\Exception $e) {
+                DB::rollback();
+                return redirect()->back()->with('error', 'Erro ao consolidar venda: ' . $e->getMessage());
+            }
+        }
+
+        // Atualiza o status normalmente
+        $comanda->update([
+            'numero_mesa' => $request->numero_mesa,
+            'nome_cliente' => $request->nome_cliente,
+            'status' => $request->status
+        ]);
+
+        return redirect()->route('comanda.index')->with('success', 'Comanda atualizada com sucesso!');
     }
 
     /**
@@ -109,5 +158,11 @@ class ComandaController extends Controller
 
         return redirect()->route('comanda.index');
         //return view('item.index', compact('item'));
+    }
+
+    public function podeReceberPedidos($id)
+    {
+        $comanda = Comanda::find($id);
+        return $comanda && $comanda->status === 'ABERTA';
     }
 }

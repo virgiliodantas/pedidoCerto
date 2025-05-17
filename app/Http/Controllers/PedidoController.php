@@ -19,18 +19,11 @@ class PedidoController extends Controller
 
     public function index()
     {
-        //$pedidos = Pedido::all();
-        
-
-        $pedidos = DB::table('pedido')
-            ->join('item','pedido.id_item','=','item.id')
-            ->join('comanda','comanda.id','=','pedido.id_comanda')
-            ->select('pedido.*','item.*',DB::raw('(item.preco*pedido.quantidade) as preco_total'))
-         
+        $comandas = DB::table('comanda')
+            ->where('status', 'ABERTA')
             ->get();
         
-        return view('pedido.index',compact('pedidos'));
-        //return view('comanda.show', compact('comanda'),compact('pedidos'),compact('item'))->with('total',$total);
+        return view('pedido.index', compact('comandas'));
     }
 
     /**
@@ -41,7 +34,8 @@ class PedidoController extends Controller
     public function create($id)
     {
         $comanda = Comanda::find($id);
-        return view('pedido.create',compact('comanda'));
+        $itens = Item::all();
+        return view('pedido.create', compact('comanda', 'itens'));
     }
 
     /**
@@ -52,9 +46,20 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        pedido::create($request->all());
-        return redirect()->route('comanda.show',$request->id_comanda);
-        return view('pedido.edit', compact('pedido'));
+        $id_comanda = $request->id_comanda;
+        $id_itens = $request->id_item;
+        $quantidades = $request->quantidade;
+
+        for ($i = 0; $i < count($id_itens); $i++) {
+            Pedido::create([
+                'id_comanda' => $id_comanda,
+                'id_item' => $id_itens[$i],
+                'quantidade' => $quantidades[$i],
+                'status' => 'PREPARACAO'
+            ]);
+        }
+
+        return redirect()->route('comanda.show', $id_comanda);
     }
 
     /**
@@ -65,8 +70,17 @@ class PedidoController extends Controller
      */
     public function show($id)
     {
-        $pedido = pedido::find($id);
-        // select * from corretor where id = $id;
+        $pedido = DB::table('pedido')
+            ->join('item', 'pedido.id_item', '=', 'item.id')
+            ->join('comanda', 'comanda.id', '=', 'pedido.id_comanda')
+            ->where('pedido.id', $id)
+            ->select('pedido.*', 'item.*', 'comanda.*', DB::raw('(item.preco*pedido.quantidade) as preco_total'))
+            ->first();
+
+        if (!$pedido) {
+            return redirect()->route('pedido.index')->with('error', 'Pedido não encontrado.');
+        }
+
         return view('pedido.show', compact('pedido'));
     }
 
@@ -146,5 +160,11 @@ class PedidoController extends Controller
                 ]
             );
         return redirect()->route('pedido.index');
+    }
+
+    public function realizar()
+    {
+        $itens = Item::all();
+        return view('pedido.realizar', compact('itens'));
     }
 }

@@ -53,9 +53,9 @@
                         <tr>
                             <td>{{$pedido->id}}</td>
                             <td>{{$pedido->titulo_prato}}</td>
-                            <td>{{$pedido->quantidade}}</td>
-                            <td>{{$pedido->preco}}</td>
-                            <td>{{$pedido->preco_total}}</td>
+                            <td>{{number_format($pedido->quantidade, 3, ',', '.')}}</td>
+                            <td>R$ {{number_format($pedido->preco, 2, ',', '.')}}</td>
+                            <td>R$ {{number_format($pedido->preco_total, 2, ',', '.')}}</td>
                             <td>{{$pedido->status}}</td>
                           <td>
                         <!--Botão de edição do registro-->
@@ -71,14 +71,14 @@
                     </tbody>
 
                 </table>
-        <b>VALOR TOTAL = R$ {{$total}}</b>
+        <b>VALOR TOTAL = R$ {{number_format($total, 2, ',', '.')}}</b>
         </div>
     </div>
      <div class="panel-footer">
         <a href="{{ route('comanda.index') }}" class="btn btn-primary">
             <i class="fas fa-reply"></i> Voltar
         </a>
-        <a href="{{ route('addpedido',$comanda->id) }}" class="btn btn-success" >
+        <a href="{{ route('pedido.create', $comanda->id) }}" class="btn btn-success" >
             <i class="fas fa-plus"> </i> Add Pedido
         </a>
 

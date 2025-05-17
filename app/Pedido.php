@@ -13,4 +13,8 @@ class Pedido extends Model
         'quantidade',
         'status',
     ];
+
+    protected $casts = [
+        'quantidade' => 'decimal:3'
+    ];
 }

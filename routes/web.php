@@ -25,7 +25,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('item', 'ItemController');
 Route::resource('comanda', 'ComandaController');
+Route::get('pedido', 'PedidoController@index')->name('pedido.index');
 Route::get('pedido/addpedido/{id}', 'PedidoController@addPedido')->name('addpedido');
-Route::resource('pedido', 'PedidoController');
+Route::get('pedido/create/{id}', 'PedidoController@create')->name('pedido.create');
+Route::post('pedido/store', 'PedidoController@store')->name('pedido.store');
 Route::get('pedido/statusPronto/{id}', 'PedidoController@statusPronto')->name('statusPronto');
 Route::get('pedido/statusCancelado/{id}', 'PedidoController@statusCancelado')->name('statusCancelado');
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::get('pedido/realizar', 'PedidoController@realizar')->name('pedido.realizar');

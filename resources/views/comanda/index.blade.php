@@ -53,9 +53,9 @@
                             </button>
                         </form>
                     <!--Botão de Incluir Pedido na Comanda-->
-                    <a href="{{ route('addpedido',$comanda->id) }}" class="btn btn-xs btn-warning" >
-                            <i class="glyphicon glyphicon-cutlery"></i>
-                        </a>
+                    <a href="{{ route('pedido.create', $comanda->id) }}" class="btn btn-xs btn-success">
+                        <i class="fas fa-plus"></i> Realizar Pedido
+                    </a>
                     </td>
                 </tr>
                 @endforeach
