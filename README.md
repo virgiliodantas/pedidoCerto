@@ -1,10 +1,8 @@
 ﻿# PROJETO LP4 FATEC - Pedido Certo
-#### Professor: ![Fernando Sales](https://github.com/fsclaro)
-
-#### Alunos: ![Gisele](https://github.com/giselen), ![Hamilton](https://github.com/camc21), ![Luís Henrique](https://github.com/luisborges06), ![MarcosKisto](https://github.com/marcoskisto)
+# Projeto original: https://github.com/Marcoskisto/pedidoCerto.gi
 
 ## Importando o Projeto
-1. git clone https://github.com/Marcoskisto/pedidoCerto.git
+1. git clone git@github.com:virgiliodantas/pedidoCerto.git
 2. cd pedidoCerto
 3. docker-compose up --build
 4. Open: http://localhost:8080/
