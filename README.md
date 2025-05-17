@@ -6,10 +6,7 @@
 ## Importando o Projeto
 1. git clone https://github.com/Marcoskisto/pedidoCerto.git
 2. cd pedidoCerto
-3. composer install
-4. php artisan key:generate
-5. criar o Banco "pedidocerto", com user -homestead- e password -secret-
-6. * php artisan migrate (migrations ainda não criadas)
+3. docker-compose up --build
 
 ## Descrição: 
 Sistema de gerenciamento de comandas de restaurante. Tem a finalidade de suprir as necessidades mínimas de atendimento ao cliente em um restaurante.
