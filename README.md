@@ -7,6 +7,7 @@
 1. git clone https://github.com/Marcoskisto/pedidoCerto.git
 2. cd pedidoCerto
 3. docker-compose up --build
+4. Open: http://localhost:8080/
 
 ## Descrição: 
 Sistema de gerenciamento de comandas de restaurante. Tem a finalidade de suprir as necessidades mínimas de atendimento ao cliente em um restaurante.
