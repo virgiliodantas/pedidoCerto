@@ -49,4 +49,27 @@
 @stop
 
 @section('js')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const precoInput = document.getElementById('preco');
+    
+    precoInput.addEventListener('input', function(e) {
+        // Remove qualquer caractere que não seja número ou ponto
+        let value = e.target.value.replace(/[^\d.]/g, '');
+        
+        // Garante que só existe um ponto
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        // Limita a 2 casas decimais
+        if (parts.length > 1) {
+            value = parts[0] + '.' + parts[1].slice(0, 2);
+        }
+        
+        e.target.value = value;
+    });
+});
+</script>
 @stop

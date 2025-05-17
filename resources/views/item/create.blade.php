@@ -9,14 +9,14 @@
 @section('content')
     <div class="panel panel-default">
         <div class="panel-heading">
-            <i class="fas fa-fx fa-user"></i> Tela de cadastramento de itens do Cardápio
+            <i class="fas fa-fx fa-user"></i> Tela de cadastramento de itens do Cardápios
         </div>
 
        <div class="panel-body">
           <form method="post" action="{{ route('item.store') }}" enctype="multipart/form-data">
           {{ csrf_field() }}
           <div class="form-group">
-               <label for="titulo_prato">Nome Item ou Prato <span class="text-red">*</span></label>
+               <label for="titulo_prato">Nome Item/Prato <span class="text-red">*</span></label>
                <input type="text" name="titulo_prato" id="titulo_prato" class="form-control">
           </div>
 
@@ -44,4 +44,27 @@
 @stop
 
 @section('js')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const precoInput = document.getElementById('preco');
+    
+    precoInput.addEventListener('input', function(e) {
+        // Remove qualquer caractere que não seja número ou ponto
+        let value = e.target.value.replace(/[^\d.]/g, '');
+        
+        // Garante que só existe um ponto
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        // Limita a 2 casas decimais
+        if (parts.length > 1) {
+            value = parts[0] + '.' + parts[1].slice(0, 2);
+        }
+        
+        e.target.value = value;
+    });
+});
+</script>
 @stop
