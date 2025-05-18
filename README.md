@@ -1,5 +1,9 @@
 ﻿# PROJETO LP4 FATEC - Pedido Certo
-# Projeto original: https://github.com/Marcoskisto/pedidoCerto.gi
+# Projeto original: https://github.com/Marcoskisto/pedidoCerto
+
+##Projeto atual descontinuado.
+
+## seguir para: https://github.com/virgiliodantas/gestor-comandas
 
 ## Importando o Projeto
 1. git clone git@github.com:virgiliodantas/pedidoCerto.git
